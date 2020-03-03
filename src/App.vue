@@ -1,28 +1,66 @@
 <template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <div>
+    <h2>Login</h2>
+    <form @submit.prevent="onSubmit" novalidate autocomplete="off">
+      <formival-form v-model="loginDTO" :validation="$v.loginDTO" :fields="fields"/>
+      <button type="submit">Submit</button>
+    </form>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+  import {required, minLength, email} from "vuelidate/lib/validators";
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
+  data() {
+    return {
+      loginDTO: {
+        email: 'me@daz.is',
+        password: ''
+      },
+      fields: [
+        {
+          key: 'email',
+          type: 'input',
+          templateOptions: {
+            label: 'Email',
+            type: 'email'
+          }
+        },
+        {
+          key: 'password',
+          type: 'input',
+          templateOptions: {
+            label: 'Password',
+            type: 'password',
+            description: 'Please enter your password here'
+          }
+        }
+      ]
+    }
+  },
+  validations: {
+    loginDTO: {
+      email: {
+        required,
+        email
+      },
+      password: {
+        required,
+        minLength: minLength(8)
+      }
+    }
+  },
+  methods: {
+    onSubmit() {
+      this.$v.$touch();
+      if (this.$v.$invalid) {
+        console.log('check the form for errors');
+        return;
+      }
+      console.log('submitted', this.loginDTO);
+    }
   }
 }
 </script>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
